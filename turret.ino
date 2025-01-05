@@ -1,5 +1,5 @@
-#define PASSCODE_LENGTH 4
-#define CORRECT_PASSCODE "6868" // Change this to your desired passcode
+#define PASSCODE_LENGTH 3
+#define CORRECT_PASSCODE "222" // Change this to your desired passcode
 
 char passcode[PASSCODE_LENGTH + 1] = ""; // Buffer to store user input passcode
 bool passcodeEntered = false; // Flag to indicate if passcode has been entered correctly
@@ -50,7 +50,7 @@ int lastPitchServoVal = 90;
 int lastRollServoVal = 90;
 
 int pitchMoveSpeed = 4; //this variable is the angle added to the pitch servo to control how quickly the PITCH servo moves - try values between 3 and 10
-int yawMoveSpeed = 60; //this variable is the speed controller for the continuous movement of the YAW servo motor. It is added or subtracted from the yawStopSpeed, so 0 would mean full speed rotation in one direction, and 180 means full rotation in the other. Try values between 10 and 90;
+int yawMoveSpeed = 50; //this variable is the speed controller for the continuous movement of the YAW servo motor. It is added or subtracted from the yawStopSpeed, so 0 would mean full speed rotation in one direction, and 180 means full rotation in the other. Try values between 10 and 90;
 int yawStopSpeed = 90; //value to stop the yaw motor - keep this at 90
 int rollMoveSpeed = 90; //this variable is the speed controller for the continuous movement of the ROLL servo motor. It is added or subtracted from the rollStopSpeed, so 0 would mean full speed rotation in one direction, and 180 means full rotation in the other. Keep this at 90 for best performance / highest torque from the roll motor when firing.
 int rollStopSpeed = 90; //value to stop the roll motor - keep this at 90
@@ -187,6 +187,18 @@ void handleCommand(int command) {
             }
             break;
 
+        case hashtag:
+            if (passcodeEntered) {
+                if (IrReceiver.decodedIRData.flags & IRDATA_FLAGS_IS_REPEAT) {
+                    return;
+                }
+                moveAndFire();
+                Serial.println("fire and move");
+            } else {
+                //shakeHeadNo();
+            }
+            break;
+
         case cmd1: // Add digit 1 to passcode
             if (!passcodeEntered) {
                 addPasscodeDigit('1');
@@ -298,6 +310,22 @@ void shakeHeadNo() {
         yawServo.write(yawStopSpeed);
         delay(50); // Pause at starting position
     }
+}
+
+void moveAndFire() {
+    fire();
+    fire();
+    delay(100);
+    rightMove(1);
+    fire();
+    fire();
+    delay(100);
+    rightMove(1);
+    fire();
+    fire();
+    delay(100);
+    leftMove(3);
+    //rightMove(1);
 }
 
 void leftMove(int moves){
