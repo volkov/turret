@@ -64,7 +64,13 @@ int pitchMin = 10; // this sets the minimum angle of the pitch servo to prevent 
 //////////////////////////////////////////////////
                 //  S E T U P  //
 //////////////////////////////////////////////////
+
+const int trigPin = 7;
+const int echoPin = 8;
+
 void setup() {
+    pinMode(trigPin, OUTPUT);
+    pinMode(echoPin, INPUT);
     Serial.begin(9600);
 
     yawServo.attach(10); //attach YAW servo to pin 3
@@ -202,6 +208,8 @@ void handleCommand(int command) {
         case cmd1: // Add digit 1 to passcode
             if (!passcodeEntered) {
                 addPasscodeDigit('1');
+            } else {
+                Serial.println("Distance: " + String(calculateDistance()));
             }
             break;
 
@@ -267,6 +275,20 @@ void handleCommand(int command) {
     if (strlen(passcode) == PASSCODE_LENGTH){
         checkPasscode();
     }
+}
+
+// Function for calculating the distance measured by the Ultrasonic sensor
+int calculateDistance() {
+
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  // Sets the trigPin on HIGH state for 10 micro seconds
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+  long duration = pulseIn(echoPin, HIGH);  // Reads the echoPin, returns the sound wave travel time in microseconds
+  int distance = duration * 0.034 / 2;
+  return distance;
 }
 
 
