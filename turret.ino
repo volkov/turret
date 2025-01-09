@@ -89,7 +89,7 @@ void setup() {
 ////////////////////////////////////////////////
 
 void loop() {
-    if (IrReceiver.decode()) { //if we have recieved a comman this loop...
+    if (IrReceiver.decode()) { //if we have received a command this loop...
         int command = IrReceiver.decodedIRData.command; //store it in a variable
         IrReceiver.resume(); // Enable receiving of the next value
         handleCommand(command); // Handle the received command through switch statements
