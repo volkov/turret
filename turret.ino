@@ -4,6 +4,8 @@
 char passcode[PASSCODE_LENGTH + 1] = ""; // Buffer to store user input passcode
 bool passcodeEntered = false; // Flag to indicate if passcode has been entered correctly
 
+bool armed = false; // Flag to indicate if the turret is armed
+
 
 //////////////////////////////////////////////////
                 //  LIBRARIES  //
@@ -100,7 +102,16 @@ void loop() {
         IrReceiver.resume(); // Enable receiving of the next value
         handleCommand(command); // Handle the received command through switch statements
     }
-    delay(5); //delay for smoothness
+    if (!armed) {
+        delay(5);
+    } else {
+        if (calculateDistance() < 50) {
+            fireAll();
+            armed = false;
+            Serial.println("DISARMED");
+        }
+        delay(100);
+    }
 }
 
 void checkPasscode() {
@@ -264,6 +275,9 @@ void handleCommand(int command) {
         case cmd0: // Add digit 0 to passcode
             if (!passcodeEntered) {
                 addPasscodeDigit('0');
+            } else {
+                armed = true;
+                Serial.println("ARMED");
             }
             break;
 
